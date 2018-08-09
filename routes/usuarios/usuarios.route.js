@@ -239,6 +239,8 @@ app.get('/usuario/:id', (req, res) => {
             })
         }
 
+        usuarios.password = '(;'
+
         res.status(200).json({
             ok: true,
             usuario: usuarios
@@ -247,17 +249,6 @@ app.get('/usuario/:id', (req, res) => {
 
 
 })
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -275,7 +266,7 @@ app.get('/', (req, res) => {
                 errors: err
             })
         }
-
+        usuarios.password = ':)'
         res.status(200).json({
             ok: true,
             usuarios: usuarios
@@ -327,10 +318,10 @@ app.post('/', (req, res) => {
 // <- Editar usuario
 // <-==============================================
 
-app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
+app.put('/:id/:cambiarClave', mdAutenticacion.verificaToken, (req, res) => {
     var body = req.body;
     var id = req.params.id;
-
+    var cambiarClave = req.params.cambiarClave
     Usuario.findById(id, (err, usuario) => {
         if (err) {
             return res.status(500).json({
@@ -349,9 +340,11 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         }
 
         usuario.nombre = body.nombre,
-            usuario.correo = body.correo,
-            usuario.password = bcrypt.hashSync(body.password),
-            usuario.usuario = body.usuario
+            usuario.correo = body.correo
+        if (cambiarClave == "si") {
+            usuario.password = bcrypt.hashSync(body.password)
+        }
+        usuario.usuario = body.usuario
 
         usuario.save((err, usuario) => {
             if (err) {
