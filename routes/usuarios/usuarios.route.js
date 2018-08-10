@@ -9,6 +9,7 @@ var conexion = require('../../socket/socket')
 
 var fileUpload = require('express-fileupload');
 var fs = require('fs');
+const path = require('path');
 
 app.use(fileUpload());
 
@@ -91,6 +92,136 @@ async function verify(token) {
         google: true
     }
 }
+
+// <-==============================================
+// <- Traer imagen
+// <-==============================================
+
+
+
+app.get('/:imagen', (req, res) => {
+
+    var imagen = req.params.imagen;
+
+    var pathImagen = path.resolve(__dirname, `./usuario_img/${imagen}`);
+
+    if (fs.existsSync(pathImagen)) {
+        res.sendFile(pathImagen);
+    } else {
+        var pathNuevo = path.resolve(__dirname, `./usuario_img/sentido.png`);
+        res.sendFile(pathNuevo);
+    }
+
+})
+
+
+
+
+
+// <-==============================================
+// <- Modificando y subiendo imagen.
+// <-==============================================
+
+app.put('/imagen/:id', (req, res) => {
+
+    var id = req.params.id;
+
+    if (!req.files) {
+        return res.status(400).json({
+            ok: true,
+            mensaje: 'No selecciono nada',
+            errors: { message: 'Debe de seleccionar una imagen' }
+        })
+    }
+
+    // Obtener nombre del archivo
+    var archivo = req.files.imagen;
+    var nombreCortado = archivo.name.split('.');
+    var extensionArchivo = nombreCortado[nombreCortado.length - 1];
+
+    // Solo estas extensiones aceptamos
+    var extensionesValidas = ['png', 'PNG', 'jpg', 'gif', 'jpeg'];
+
+    if (extensionesValidas.indexOf(extensionArchivo) < 0) {
+        return res.status(400).json({
+            ok: true,
+            mensaje: 'Extension no valida',
+            errors: { message: 'Las extensiones validas son: ' + extensionesValidas.join(', ') }
+        })
+    }
+
+    //Nombre del archivo
+    var nombreArchivo = `${id}-${ new Date().getMilliseconds()}.${extensionArchivo}`;
+
+    //Movel el archivo del temporal a un path
+    var path = `./routes/usuarios/usuario_img/${nombreArchivo}`;
+
+    archivo.mv(path, err => {
+        if (err) {
+            return res.status(400).json({
+                ok: true,
+                mensaje: 'Error al mover archivo',
+                errors: err
+            })
+        }
+
+        SubirImagenPorId(id, nombreArchivo, res);
+
+    })
+
+
+
+
+
+})
+
+function SubirImagenPorId(id, nombreArchivo, res) {
+
+    Usuario.findById(id, (err, usuarios) => {
+        var pathViejo = './routes/usuarios/usuario_img/' + usuarios.imagen;
+
+        if (fs.existsSync(pathViejo)) {
+            fs.unlink(pathViejo, function(err) {
+                if (err) {
+                    return;
+
+                }
+            });
+        }
+
+        usuarios.imagen = nombreArchivo;
+
+        usuarios.save((err, usuarios) => {
+
+            if (err) {
+                return res.status(400).json({
+                    ok: true,
+                    mensaje: 'Error al actualizar o subir la imagen',
+                    errors: err
+                })
+            }
+
+            res.status(200).json({
+                ok: true,
+                mensaje: 'Imagen subida o actualizada',
+                usuarios: usuarios
+            });
+
+        });
+
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Error al buscar el registro',
+                errors: err
+            })
+        }
+
+    })
+
+}
+
+
 
 
 app.post('/google', async(req, res) => {
@@ -397,132 +528,6 @@ app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 })
 
 
-
-// <-==============================================
-// <- Traer imagen
-// <-==============================================
-
-app.get('/:imagen', (req, res) => {
-
-    var imagen = req.params.imagen;
-
-    var pathImagen = path.resolve(__dirname, `./usuarios/usuario_img/${imagen}`);
-
-    if (fs.existsSync(pathImagen)) {
-        res.sendFile(pathImagen);
-    } else {
-        var pathNuevo = path.resolve(__dirname, `./usuarios/usuario_img/sentido.png`);
-        res.sendFile(pathNuevo);
-    }
-
-})
-
-
-
-
-
-// <-==============================================
-// <- Modificando y subiendo imagen.
-// <-==============================================
-
-app.put('/imagen/:id', (req, res) => {
-
-    var id = req.params.id;
-
-    if (!req.files) {
-        return res.status(400).json({
-            ok: true,
-            mensaje: 'No selecciono nada',
-            errors: { message: 'Debe de seleccionar una imagen' }
-        })
-    }
-
-    // Obtener nombre del archivo
-    var archivo = req.files.imagen;
-    var nombreCortado = archivo.name.split('.');
-    var extensionArchivo = nombreCortado[nombreCortado.length - 1];
-
-    // Solo estas extensiones aceptamos
-    var extensionesValidas = ['png', 'PNG', 'jpg', 'gif', 'jpeg'];
-
-    if (extensionesValidas.indexOf(extensionArchivo) < 0) {
-        return res.status(400).json({
-            ok: true,
-            mensaje: 'Extension no valida',
-            errors: { message: 'Las extensiones validas son: ' + extensionesValidas.join(', ') }
-        })
-    }
-
-    //Nombre del archivo
-    var nombreArchivo = `${id}-${ new Date().getMilliseconds()}.${extensionArchivo}`;
-
-    //Movel el archivo del temporal a un path
-    var path = `./routes/usuarios/usuario_img/${nombreArchivo}`;
-
-    archivo.mv(path, err => {
-        if (err) {
-            return res.status(400).json({
-                ok: true,
-                mensaje: 'Error al mover archivo',
-                errors: err
-            })
-        }
-
-        SubirImagenPorId(id, nombreArchivo, res);
-
-    })
-
-
-
-
-
-})
-
-function SubirImagenPorId(id, nombreArchivo, res) {
-
-    Usuario.findById(id, (err, usuarios) => {
-        var pathViejo = './routes/usuarios/usuario_img/' + usuarios.imagen;
-
-        if (fs.existsSync(pathViejo)) {
-            fs.unlink(pathViejo, function(err) {
-                if (err) {
-                    return;
-
-                }
-            });
-        }
-
-        usuarios.imagen = nombreArchivo;
-
-        usuarios.save((err, usuarios) => {
-
-            if (err) {
-                return res.status(400).json({
-                    ok: true,
-                    mensaje: 'Error al actualizar o subir la imagen',
-                    errors: err
-                })
-            }
-
-            res.status(200).json({
-                ok: true,
-                mensaje: 'Imagen subida o actualizada',
-                usuarios: usuarios
-            });
-
-        });
-
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'Error al buscar el registro',
-                errors: err
-            })
-        }
-
-    })
-
-}
 
 
 
