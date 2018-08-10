@@ -10,7 +10,7 @@ var usuariosScheme = Schema({
     token: { type: String, },
     google: { type: Boolean, required: [true, "el token es obligatorio"], default: false },
     password: { type: String, required: [true, "la contraseña es requerida"] },
-    usuario: { type: String, required: [true, "el usuario es requerido"], index: true, unique: true },
+    usuario: { type: String, index: true, unique: true },
     imagen: { type: String, required: false },
     estado: { type: Number, required: [true, "el estado es requierido"], default: 1 },
 
