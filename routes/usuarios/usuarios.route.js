@@ -97,8 +97,6 @@ async function verify(token) {
 // <- Traer imagen
 // <-==============================================
 
-
-
 app.get('/:imagen', (req, res) => {
 
     var imagen = req.params.imagen;
@@ -108,7 +106,7 @@ app.get('/:imagen', (req, res) => {
     if (fs.existsSync(pathImagen)) {
         res.sendFile(pathImagen);
     } else {
-        var pathNuevo = path.resolve(__dirname, `./usuario_img/sentido.png`);
+        var pathNuevo = path.resolve(__dirname, `./usuario_img/no-img.jpg`);
         res.sendFile(pathNuevo);
     }
 
@@ -269,8 +267,9 @@ app.post('/google', async(req, res) => {
             usuario.nombre = googleUser.nombre,
                 usuario.correo = googleUser.correo,
                 usuario.google = true,
-                usuario.password = "google",
-                usuario.usuario = "google"
+                usuario.password = "):",
+                usuario.usuario = "",
+                usuario.imagen = googleUser.img
 
 
             usuario.save((err, usuario) => {
@@ -437,7 +436,7 @@ app.post('/', (req, res) => {
 
     usuarios.save((err, usuarios) => {
         if (err) {
-            return res.status(201).json({
+            return res.status(500).json({
                 ok: false,
                 mensaje: 'Error al crear el usuario',
                 errors: "El usuario o el correo ya existen"
