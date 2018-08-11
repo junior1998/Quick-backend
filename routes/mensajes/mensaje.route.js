@@ -11,24 +11,79 @@ app.get('/buscar/:busqueda', (req, res) => {
     var busqueda = req.params.busqueda;
     var regex = new RegExp(busqueda, 'i');
 
-    Mensaje.find({ nombre_error: regex, tipo_error: regex }, (err, mensaje) => {
+    Mensaje.find({}).or([{ 'nombre_error': regex }, { 'tipo_error': regex }, { 'solucion': regex }])
+        .populate('hecho_objeto')
+        .exec((err, mensaje) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error este mensaje no existe',
+                    errors: err
+                })
+            }
+
+            res.status(200).json({
+                ok: true,
+                mensaje: mensaje
+            })
+        })
+})
+
+
+
+
+// <-==============================================
+// <- Traer un mensaje con un id
+// <-==============================================
+
+app.get('/mensaje/:id', (req, res) => {
+
+    var id = req.params.id;
+
+    Mensaje.findById(id, (err, mensajes) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error este mensaje no existe',
+                mensaje: 'Error cargando el mensaje con un id',
                 errors: err
             })
         }
 
         res.status(200).json({
             ok: true,
-            mensaje: mensaje
+            mensaje: mensajes
         })
     })
+
+
 })
 
+// <-==============================================
+// <- Traer todos los usuarios
+// <-==============================================
+
+app.get('/:id', (req, res) => {
+    var id = req.params.id;
+
+    Mensaje.find({ hecho_id: id })
+        .populate('hecho_objeto')
+        .exec((err, mensajes) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error cargando mensajes',
+                    errors: err
+                })
+            }
+
+            res.status(200).json({
+                ok: true,
+                mensaje: mensajes
+            })
+        })
 
 
+})
 
 
 
@@ -39,20 +94,22 @@ app.get('/buscar/:busqueda', (req, res) => {
 
 app.get('/', (req, res) => {
 
-    Mensaje.find({ estado: 1 }, (err, mensajes) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error cargando cliente',
-                errors: err
-            })
-        }
+    Mensaje.find({ estado: 1 })
+        .populate('hecho_objeto')
+        .exec((err, mensajes) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error cargando mensajes',
+                    errors: err
+                })
+            }
 
-        res.status(200).json({
-            ok: true,
-            mensaje: mensajes
+            res.status(200).json({
+                ok: true,
+                mensaje: mensajes
+            })
         })
-    })
 
 
 })
@@ -78,7 +135,8 @@ app.post('/', (req, res) => {
         tipo_error: body.tipo_error,
         fecha: fecha_final,
         solucion: body.solucion,
-        hecho_usuario: body.hecho_usuario,
+        hecho_id: body.hecho_id,
+        hecho_objeto: body.hecho_objeto,
         estado: 1
     })
 
@@ -135,7 +193,8 @@ app.put('/:id', (req, res) => {
             mensaje.tipo_error = body.tipo_error,
             mensaje.solucion = body.solucion,
             mensaje.fecha = fecha_final,
-            mensaje.hecho_usuario = body.hecho_usuario
+            mensaje.hecho_id = body.hecho_id,
+            mensaje.hecho_objeto = body.hecho_objeto
 
         mensaje.save((err, mensaje) => {
             if (err) {

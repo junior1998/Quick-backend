@@ -387,34 +387,26 @@ app.get('/usuario/:id', (req, res) => {
 // <- Traer todos los usuarios
 // <-==============================================
 
-
 app.get('/', (req, res) => {
 
-
-
-    Usuario.find({ estado: 1 })
-        .populate('mensajes')
-        .exec(
-            (err, usuarios) => {
-                if (err) {
-                    return res.status(500).json({
-                        ok: false,
-                        mensaje: 'Error al cargar el usuario',
-                        errors: err
-                    })
-                }
-
-
-
-                res.status(200).json({
-                    ok: true,
-                    usuario: usuarios
-                })
-
+    Usuario.find({ estado: 1 }, (err, usuarios) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error cargando cliente',
+                errors: err
             })
+        }
+
+        res.status(200).json({
+            ok: true,
+            usuario: usuarios
+        })
+    })
 
 
 })
+
 
 
 
@@ -477,10 +469,6 @@ app.put('/mensaje/:id', (req, res) => {
 
             })
         }
-
-        console.log(usuario.mensajes)
-
-
 
         usuario.mensajes = body,
 

@@ -8,6 +8,8 @@ var mensajeScheme = Schema({
     tipo_error: { type: String, required: [true, "el tipo del erro es requerido"] },
     fecha: { type: String, required: [true, "la fecha es requerida"] },
     solucion: { type: String, required: [true, "la solucion es requerida"] },
+    hecho_id: { type: String, required: [true, "El id de quie lo hizo"] },
+    hecho_objeto: { type: Schema.Types.ObjectId, ref: 'Usuario' },
     estado: { type: Number, required: [true, "el estado es requierido"], default: 1 },
 
 })
