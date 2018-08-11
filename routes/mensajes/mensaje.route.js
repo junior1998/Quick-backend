@@ -36,31 +36,27 @@ app.get('/buscar/:busqueda', (req, res) => {
 // <-==============================================
 // <- Traer todos los usuarios
 // <-==============================================
+
 app.get('/', (req, res) => {
 
-
-
-    Mensaje.find({ estado: 1 })
-        .populate('hecho_usuario')
-        .exec(
-            (err, mensaje) => {
-                if (err) {
-                    return res.status(500).json({
-                        ok: false,
-                        mensaje: 'Error al cargar los mensajes',
-                        errors: err
-                    })
-                }
-
-                res.status(200).json({
-                    ok: true,
-                    mensaje: mensaje
-                })
-
+    Mensaje.find({ estado: 1 }, (err, mensajes) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error cargando cliente',
+                errors: err
             })
+        }
+
+        res.status(200).json({
+            ok: true,
+            mensaje: mensajes
+        })
+    })
 
 
 })
+
 
 
 // <-==============================================

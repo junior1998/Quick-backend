@@ -12,6 +12,7 @@ var usuariosScheme = Schema({
     password: { type: String, required: [true, "la contraseña es requerida"] },
     usuario: { type: String, required: [true, "el usuario es requerido"], index: true, unique: true },
     imagen: { type: String, required: false },
+    mensajes: { type: Array, },
     estado: { type: Number, required: [true, "el estado es requierido"], default: 1 },
 
 })

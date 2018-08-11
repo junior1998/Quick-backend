@@ -387,27 +387,35 @@ app.get('/usuario/:id', (req, res) => {
 // <-==============================================
 // <- Traer todos los usuarios
 // <-==============================================
+
+
 app.get('/', (req, res) => {
 
-    Usuario.find({ estado: 1 }, (err, usuarios) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error al cargar el usuario',
-                errors: err
-            })
-        }
-        usuarios.password = ':)'
-        res.status(200).json({
-            ok: true,
-            usuarios: usuarios
-        })
 
-    })
+
+    Usuario.find({ estado: 1 })
+        .populate('mensajes')
+        .exec(
+            (err, usuarios) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: 'Error al cargar el usuario',
+                        errors: err
+                    })
+                }
+
+
+
+                res.status(200).json({
+                    ok: true,
+                    usuario: usuarios
+                })
+
+            })
 
 
 })
-
 
 
 
@@ -436,6 +444,8 @@ app.post('/', (req, res) => {
             })
         }
 
+        console.log(usuarios)
+
         res.status(200).json({
             ok: true,
             usuarios: usuarios
@@ -443,6 +453,55 @@ app.post('/', (req, res) => {
     })
 
 
+})
+
+// <-==============================================
+// <- Editar usuario con mensaje
+// <-==============================================
+
+app.put('/mensaje/:id', (req, res) => {
+    var body = req.body;
+    var id = req.params.id;
+    Usuario.findById(id, (err, usuario) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al encontrar el usuario',
+                errors: err
+            })
+        }
+
+        if (!usuario) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'El usuario con el id' + id + 'no existe'
+
+            })
+        }
+
+        console.log(usuario.mensajes)
+
+
+
+        usuario.mensajes = body,
+
+
+            usuario.save((err, usuario) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: 'Error al editar el usuario',
+                        errors: err
+                    })
+                }
+
+                res.status(200).json({
+                    ok: true,
+                    usuario: usuario
+                })
+            })
+
+    })
 })
 
 // <-==============================================
