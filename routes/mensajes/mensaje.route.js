@@ -1,6 +1,36 @@
 var express = require('express');
 var app = express();
 var Mensaje = require('../../models/mensajes/mensaje.model');
+var conexion = require('../../socket/socket')
+
+//Configuracion del socket
+conexion.on('connection', (socket) => {
+    socket.on('mensajeDB', (mensajeResivido) => {
+        conexion.sockets.emit('mensajesEmitido', {
+            mensaje: mensajeResivido.mensajeActual
+        })
+
+    })
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // <-==============================================
@@ -65,7 +95,7 @@ app.get('/mensaje/:id', (req, res) => {
 app.get('/:id', (req, res) => {
     var id = req.params.id;
 
-    Mensaje.find({ hecho_id: id })
+    Mensaje.find({ hecho_id: id, estado: 1 })
         .populate('hecho_objeto')
         .exec((err, mensajes) => {
             if (err) {
@@ -89,7 +119,7 @@ app.get('/:id', (req, res) => {
 
 
 // <-==============================================
-// <- Traer todos los usuarios
+// <- Traer todos los mensaje
 // <-==============================================
 
 app.get('/', (req, res) => {
@@ -213,5 +243,48 @@ app.put('/:id', (req, res) => {
     })
 })
 
+// <-==============================================
+// <- Borrar mensaje
+// <-==============================================
+
+app.put('/borrar/:id', (req, res) => {
+    var id = req.params.id;
+    var body = req.body;
+
+    Mensaje.findById(id, (err, mensaje) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al encontrar el mensaje',
+                errors: err
+            })
+        }
+
+        if (!mensaje) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error mensaje no existe',
+                errors: err
+            })
+        }
+
+        mensaje.estado = 2;
+
+        mensaje.save((err, mensaje) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al guardar el mensaje',
+                    errors: err
+                })
+            }
+
+            res.status(200).json({
+                ok: true,
+                mensaje: mensaje
+            })
+        })
+    })
+})
 
 module.exports = app;
