@@ -89,7 +89,7 @@ app.get('/mensaje/:id', (req, res) => {
 })
 
 // <-==============================================
-// <- Traer todos los usuarios
+// <- Traer todos los mensajes con id
 // <-==============================================
 
 app.get('/:id', (req, res) => {
@@ -186,6 +186,94 @@ app.post('/', (req, res) => {
     })
 })
 
+// <-=====================================================
+// <- Traer todos los mensajes con los id de los clientes
+// <-=====================================================
+
+app.get('/likes/:id', (req, res) => {
+    var id = req.params.id;
+    var body = req.body;
+    var campo_likes = req.params.campo_likes;
+
+    Mensaje.find({ _id: id })
+        .populate('hecho_objeto')
+        .exec((err, mensajes) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error cargando mensajes',
+                    errors: err
+                })
+            }
+
+            res.status(200).json({
+                ok: true,
+                mensaje: mensajes
+            })
+        })
+
+
+})
+
+
+// <-==============================================
+// <- Actualizar like 
+// <-==============================================
+app.put('/likes/:like/:no_like/:id', (req, res) => {
+    var like = req.params.like;
+    var no_like = req.params.no_like;
+    var id = req.params.id;
+    var body = req.body;
+    console.log(like, no_like)
+
+    Mensaje.findById(id, (err, mensaje) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al encontrar el mensaje',
+                errors: err
+            })
+        }
+
+        if (!mensaje) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'El mensaje con el id' + id + 'no existe'
+
+            })
+        }
+
+
+
+
+        if (like == 'si') {
+            mensaje.like = body.like
+        } else {
+            if (no_like == 'si') {
+
+                mensaje.no_like = body.no_like
+            }
+        }
+
+        mensaje.likes = body.likes;
+
+
+        mensaje.save((err, mensaje) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al guardar el mensaje',
+                    errors: err
+                })
+            }
+
+            res.status(200).json({
+                ok: true,
+                mensaje: mensaje
+            })
+        })
+    })
+})
 
 // <-==============================================
 // <- Actualizar
