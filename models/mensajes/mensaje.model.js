@@ -12,6 +12,7 @@ var mensajeScheme = Schema({
     like: { type: Number },
     no_like: { type: Number },
     likes: { type: Array },
+    no_megusta: { type: Array },
     hecho_objeto: { type: Schema.Types.ObjectId, ref: 'Usuario' },
     estado: { type: Number, required: [true, "el estado es requierido"], default: 1 },
 

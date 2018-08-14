@@ -27,6 +27,28 @@ conexion.on('connection', (socket) => {
 
 
 
+// <-==============================================
+// <- Borrar id del de los que han dado like 
+// <-==============================================
+
+app.delete('/:id', (req, res) => {
+    var id = req.params.id;
+
+    Mensaje.findByIdAndRemove(id, (err, mensajeBorrado) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al encontrar id',
+                errors: err
+            })
+        }
+
+        res.status(200).json({
+            ok: true,
+            mensajeBorrado: mensajeBorrado
+        })
+    })
+})
 
 
 
@@ -167,6 +189,8 @@ app.post('/', (req, res) => {
         solucion: body.solucion,
         hecho_id: body.hecho_id,
         hecho_objeto: body.hecho_objeto,
+        like: 0,
+        no_like: 0,
         estado: 1
     })
 
@@ -219,12 +243,12 @@ app.get('/likes/:id', (req, res) => {
 // <-==============================================
 // <- Actualizar like 
 // <-==============================================
-app.put('/likes/:like/:no_like/:id', (req, res) => {
+app.put('/:likes/:like/:no_like/:id', (req, res) => {
     var like = req.params.like;
     var no_like = req.params.no_like;
     var id = req.params.id;
     var body = req.body;
-    console.log(like, no_like)
+    var likes = req.params.likes;
 
     Mensaje.findById(id, (err, mensaje) => {
         if (err) {
@@ -243,6 +267,9 @@ app.put('/likes/:like/:no_like/:id', (req, res) => {
             })
         }
 
+        console.log(body.no_megusta)
+
+
 
 
 
@@ -255,7 +282,13 @@ app.put('/likes/:like/:no_like/:id', (req, res) => {
             }
         }
 
-        mensaje.likes = body.likes;
+        if (likes == 'likes') {
+            mensaje.likes = body.likes;
+        } else {
+            if (likes == 'no_megusta') {
+                mensaje.no_megusta = body.no_megusta
+            }
+        }
 
 
         mensaje.save((err, mensaje) => {
