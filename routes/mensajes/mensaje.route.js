@@ -12,6 +12,13 @@ conexion.on('connection', (socket) => {
 
     })
 
+    socket.on('MensajeObjeto', (mensajeOBjetoResivido) => {
+        conexion.sockets.emit('mensajesObjetoEmitido', {
+            mensaje: mensajeOBjetoResivido.mensajeActual
+        })
+
+    })
+
 })
 
 
