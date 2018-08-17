@@ -250,7 +250,7 @@ app.get('/likes/:id', (req, res) => {
 // <-==============================================
 // <- Actualizar like 
 // <-==============================================
-app.put('/:likes/:like/:no_like/:id', (req, res) => {
+app.put('/likes/:like/:no_like/:id', (req, res) => {
     var like = req.params.like;
     var no_like = req.params.no_like;
     var id = req.params.id;
@@ -276,18 +276,6 @@ app.put('/:likes/:like/:no_like/:id', (req, res) => {
 
         console.log(body.no_megusta)
 
-
-
-
-
-        if (like == 'si') {
-            mensaje.like = body.like
-        } else {
-            if (no_like == 'si') {
-
-                mensaje.no_like = body.no_like
-            }
-        }
 
         if (likes == 'likes') {
             mensaje.likes = body.likes;
@@ -352,7 +340,9 @@ app.put('/:id', (req, res) => {
             mensaje.solucion = body.solucion,
             mensaje.fecha = fecha_final,
             mensaje.hecho_id = body.hecho_id,
-            mensaje.hecho_objeto = body.hecho_objeto
+            mensaje.hecho_objeto = body.hecho_objeto,
+            mensaje.likes = body.likes,
+            mensaje.no_megusta = body.no_megusta
 
         mensaje.save((err, mensaje) => {
             if (err) {
