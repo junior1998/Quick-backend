@@ -255,7 +255,6 @@ app.put('/likes/:like/:no_like/:id', (req, res) => {
     var no_like = req.params.no_like;
     var id = req.params.id;
     var body = req.body;
-    var likes = req.params.likes;
 
     Mensaje.findById(id, (err, mensaje) => {
         if (err) {
@@ -274,14 +273,14 @@ app.put('/likes/:like/:no_like/:id', (req, res) => {
             })
         }
 
-        console.log(body.no_megusta)
+        console.log(body)
 
 
-        if (likes == 'likes') {
-            mensaje.likes = body.likes;
+        if (like == 'likes') {
+            mensaje.likes = body;
         } else {
-            if (likes == 'no_megusta') {
-                mensaje.no_megusta = body.no_megusta
+            if (no_like == 'no_like') {
+                mensaje.no_megusta = body
             }
         }
 
