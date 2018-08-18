@@ -9,15 +9,28 @@ var mongoose = require('mongoose');
 // <-            INICIALIZAR VARIABLES
 // <-==============================================
 var app = express();
-
-// <-==============================================
-// <-  				IMPORTAR RUTAS
-// <-==============================================
+var path = require('path')
+    // <-==============================================
+    // <-  				IMPORTAR RUTAS
+    // <-==============================================
 var usuariosRoutes = require('./routes/usuarios/usuarios.route.js');
 var mensajesRoutes = require('./routes/mensajes/mensaje.route.js');
 
 
 
+
+
+
+
+// <-==============================================
+// <- 				  PERMISOS
+// <-==============================================
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, OPTIONS");
+    next();
+});
 
 
 // <-==============================================
@@ -31,17 +44,6 @@ mongoose.connection.openUri('mongodb://firemongo:321654@198.199.72.76:27017/' + 
     console.log(`[${db}] MongoDB - \x1b[32monline\x1b[0m`)
 
 })
-
-
-// <-==============================================
-// <- 				  PERMISOS
-// <-==============================================
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, OPTIONS");
-    next();
-});
 
 // // <-==============================================
 // // <- 				BODY-PARSER
@@ -58,6 +60,9 @@ app.use(bodyParser.json())
 // <-==============================================
 app.use('/usuarios', usuariosRoutes);
 app.use('/mensajes', mensajesRoutes);
+app.use(express.static(path.join(__dirname, '../Quick1.0/dist/Quick')))
+    // app.get('/', (req, res) => {
+    // })
 
 
 
