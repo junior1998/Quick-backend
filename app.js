@@ -36,8 +36,8 @@ app.use(function(req, res, next) {
 // <-==============================================
 // <- 		 CONEXION A LA BASE DE DATOS
 // <-==============================================
-var db = "admin";
-mongoose.connection.openUri('mongodb://firemongo:321654@198.199.72.76:27017/' + db, (err, res) => {
+var db = "quick";
+mongoose.connection.openUri('mongodb://junior:321654@198.199.72.76:27017/' + db, (err, res) => {
 
     if (err) throw err;
 
@@ -60,7 +60,7 @@ app.use(bodyParser.json())
 // <-==============================================
 app.use('/usuarios', usuariosRoutes);
 app.use('/mensajes', mensajesRoutes);
-app.use(express.static(path.join(__dirname, '../Quick/dist/Quick')))
+app.use(express.static(path.join(__dirname, '../Quick1.0/dist/Quick')))
     // app.get('/', (req, res) => {
     // })
 
