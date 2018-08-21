@@ -58,7 +58,7 @@ const client = new OAuth2Client(CLIENT_ID);
 
 app.get('/renuevatoken', mdAutenticacion.verificaToken, (req, res) => {
 
-    var token = jwt.sign({ usuario: req.usuario }, 'esteesunseeddificil', { expiresIn: 7200 }) // 4 horas
+    var token = jwt.sign({ usuario: req.usuario }, 'esteesunseeddificil', { expiresIn: 14400 }) // 4 horas
 
 
     res.status(200).json({
@@ -252,7 +252,7 @@ app.post('/google', async(req, res) => {
                     mensaje: 'Debe usar su autenticacion normal'
                 })
             } else {
-                var token = jwt.sign({ usuario: usuario }, 'esteesunseeddificil', { expiresIn: 7200 }) // 4 horas
+                var token = jwt.sign({ usuario: usuario }, 'esteesunseeddificil', { expiresIn: 14400 }) // 4 horas
 
                 return res.status(200).json({
                     ok: true,
@@ -275,7 +275,7 @@ app.post('/google', async(req, res) => {
 
 
             usuario.save((err, usuario) => {
-                var token = jwt.sign({ usuario: usuario }, 'esteesunseeddificil', { expiresIn: 7200 }) // 4 horas
+                var token = jwt.sign({ usuario: usuario }, 'esteesunseeddificil', { expiresIn: 14400 }) // 4 horas
 
                 res.status(200).json({
                     ok: true,
@@ -335,10 +335,10 @@ app.post('/login', (req, res) => {
 
 
         if (body.sesiones == "desactivado") {
-            var token = jwt.sign({ usuario: usuario }, 'esteesunseeddificil', { expiresIn: 7200 }) // 4 horas
+            var token = jwt.sign({ usuario: usuario }, 'esteesunseeddificil', { expiresIn: 14400 }) // 4 horas
         } else {
             if (body.sesiones == "activado") {
-                var token = jwt.sign({ usuario: usuario }, 'esteesunseeddificil', { expiresIn: 7200 }) // 4 horas
+                var token = jwt.sign({ usuario: usuario }, 'esteesunseeddificil', { expiresIn: 14400 }) // 4 horas
 
             }
         }
