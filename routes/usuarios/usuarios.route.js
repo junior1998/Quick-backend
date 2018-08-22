@@ -270,12 +270,22 @@ app.post('/google', async(req, res) => {
                 usuario.correo = googleUser.correo,
                 usuario.google = true,
                 usuario.password = "):",
-                usuario.usuario = "",
+                usuario.usuario = googleUser.correo,
                 usuario.imagen = googleUser.img
 
 
             usuario.save((err, usuario) => {
+
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: 'Error al guardar el usuario',
+                        errors: err
+                    })
+                }
+
                 var token = jwt.sign({ usuario: usuario }, 'esteesunseeddificil', { expiresIn: 14400 }) // 4 horas
+
 
                 res.status(200).json({
                     ok: true,
@@ -437,7 +447,6 @@ app.post('/', (req, res) => {
             })
         }
 
-        console.log(usuarios)
 
         res.status(200).json({
             ok: true,
