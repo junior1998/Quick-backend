@@ -273,18 +273,24 @@ app.put('/likes/:like/:no_like/:id', (req, res) => {
             })
         }
 
-        console.log(body)
-
         if (like == 'likes') {
             if (mensaje.likes.indexOf(body.id_temp) >= 0) {
                 mensaje.likes.splice(mensaje.likes.indexOf(body.id_temp), 1)
             } else {
+                if (mensaje.no_megusta.indexOf(body.id_temp) >= 0) {
+                    mensaje.no_megusta.splice(mensaje.no_megusta.indexOf(body.id_temp), 1)
+                }
                 mensaje.likes.push(body.id_temp)
             }
-        } else {
+        }
+
+        if (no_like == 'no_like') {
             if (mensaje.no_megusta.indexOf(body.id_temp) >= 0) {
                 mensaje.no_megusta.splice(mensaje.no_megusta.indexOf(body.id_temp), 1)
             } else {
+                if (mensaje.likes.indexOf(body.id_temp) >= 0) {
+                    mensaje.likes.splice(mensaje.likes.indexOf(body.id_temp), 1)
+                }
                 mensaje.no_megusta.push(body.id_temp)
             }
         }
@@ -298,6 +304,8 @@ app.put('/likes/:like/:no_like/:id', (req, res) => {
                     errors: err
                 })
             }
+
+            console.log(mensaje)
 
 
             res.status(200).json({
