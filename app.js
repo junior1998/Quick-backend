@@ -60,7 +60,7 @@ app.use(bodyParser.json())
 // <-==============================================
 app.use('/usuarios', usuariosRoutes);
 app.use('/mensajes', mensajesRoutes);
-app.use(express.static(path.join(__dirname, '../Quick1.0/dist/Quick')))
+app.use(express.static(path.join(__dirname, '../Quick/dist/Quick')))
     // app.get('/', (req, res) => {
     // })
 

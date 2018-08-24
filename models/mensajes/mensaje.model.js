@@ -11,6 +11,7 @@ var mensajeScheme = Schema({
     hecho_id: { type: String, required: [true, "El id de quie lo hizo"] },
     likes: { type: Array },
     no_megusta: { type: Array },
+    id_temp: { type: String },
     hecho_objeto: { type: Schema.Types.ObjectId, ref: 'Usuario' },
     estado: { type: Number, required: [true, "el estado es requierido"], default: 1 },
 
