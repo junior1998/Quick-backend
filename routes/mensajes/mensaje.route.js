@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var Mensaje = require('../../models/mensajes/mensaje.model');
 var conexion = require('../../socket/socket')
-
+var entradas = 0;
 //Configuracion del socket
 conexion.on('connection', (socket) => {
     socket.on('mensajeDB', (mensajeResivido) => {
@@ -250,68 +250,102 @@ app.get('/likes/:id', (req, res) => {
 // <-==============================================
 // <- Actualizar like 
 // <-==============================================
-app.put('/likes/:like/:no_like/:id', (req, res) => {
-    var like = req.params.like;
-    var no_like = req.params.no_like;
-    var id = req.params.id;
-    var body = req.body;
-
-    Mensaje.findById(id, (err, mensaje) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error al encontrar el mensaje',
-                errors: err
-            })
-        }
-
-        if (!mensaje) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'El mensaje con el id' + id + 'no existe'
-
-            })
-        }
-
-        if (like == 'likes') {
-            if (mensaje.likes.indexOf(body.id_temp) >= 0) {
-                mensaje.likes.splice(mensaje.likes.indexOf(body.id_temp), 1)
-            } else {
-                if (mensaje.no_megusta.indexOf(body.id_temp) >= 0) {
-                    mensaje.no_megusta.splice(mensaje.no_megusta.indexOf(body.id_temp), 1)
-                }
-                mensaje.likes.push(body.id_temp)
-            }
-        }
-
-        if (no_like == 'no_like') {
-            if (mensaje.no_megusta.indexOf(body.id_temp) >= 0) {
-                mensaje.no_megusta.splice(mensaje.no_megusta.indexOf(body.id_temp), 1)
-            } else {
-                if (mensaje.likes.indexOf(body.id_temp) >= 0) {
-                    mensaje.likes.splice(mensaje.likes.indexOf(body.id_temp), 1)
-                }
-                mensaje.no_megusta.push(body.id_temp)
-            }
-        }
+app.put('/likes/:like/:no_like/:id', async(req, res) => {
+    let resultado
+    let espera = new Promise((resolve, reject) => {
 
 
-        mensaje.save((err, mensaje) => {
+
+        var like = req.params.like;
+        var no_like = req.params.no_like;
+        var id = req.params.id;
+        var body = req.body;
+
+        // setTimeout(() => {
+        //     entradas++
+
+
+        //     console.log(entradas)
+        // }, 2000)
+
+
+
+
+
+
+
+
+
+        Mensaje.findById(id, (err, mensaje) => {
             if (err) {
                 return res.status(500).json({
                     ok: false,
-                    mensaje: 'Error al guardar el mensaje',
+                    mensaje: 'Error al encontrar el mensaje',
                     errors: err
                 })
             }
 
+            if (!mensaje) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'El mensaje con el id' + id + 'no existe'
 
-            res.status(200).json({
-                ok: true,
-                mensaje: mensaje
+                })
+            }
+
+            if (like == 'likes') {
+                if (mensaje.likes.indexOf(body.id_temp) >= 0) {
+                    mensaje.likes.splice(mensaje.likes.indexOf(body.id_temp), 1)
+                } else {
+                    if (mensaje.no_megusta.indexOf(body.id_temp) >= 0) {
+                        mensaje.no_megusta.splice(mensaje.no_megusta.indexOf(body.id_temp), 1)
+                    }
+                    mensaje.likes.push(body.id_temp)
+                }
+            }
+
+            if (no_like == 'no_like') {
+                if (mensaje.no_megusta.indexOf(body.id_temp) >= 0) {
+                    mensaje.no_megusta.splice(mensaje.no_megusta.indexOf(body.id_temp), 1)
+                } else {
+                    if (mensaje.likes.indexOf(body.id_temp) >= 0) {
+                        mensaje.likes.splice(mensaje.likes.indexOf(body.id_temp), 1)
+                    }
+                    mensaje.no_megusta.push(body.id_temp)
+                }
+            }
+
+            console.log(mensaje)
+            console.log('Nuevo')
+
+
+            mensaje.save((err, mensaje) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: 'Error al guardar el mensaje',
+                        errors: err
+
+                    })
+
+                }
+
+
+
+                resolve(mensaje)
             })
         })
+
     })
+
+    resultado = await espera
+
+    return res.status(200).json({
+        ok: true,
+        mensaje: resultado
+    })
+
+
 })
 
 // <-==============================================
