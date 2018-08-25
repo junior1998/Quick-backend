@@ -305,8 +305,6 @@ app.put('/likes/:like/:no_like/:id', (req, res) => {
                 })
             }
 
-            console.log(mensaje)
-
 
             res.status(200).json({
                 ok: true,
