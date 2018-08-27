@@ -15,6 +15,8 @@ var path = require('path')
     // <-==============================================
 var usuariosRoutes = require('./routes/usuarios/usuarios.route.js');
 var mensajesRoutes = require('./routes/mensajes/mensaje.route.js');
+var likesRoutes = require('./routes/likes/likes.route.js');
+
 
 
 
@@ -60,6 +62,7 @@ app.use(bodyParser.json())
 // <-==============================================
 app.use('/usuarios', usuariosRoutes);
 app.use('/mensajes', mensajesRoutes);
+app.use('/likes', likesRoutes);
 app.use(express.static(path.join(__dirname, '../Quick/dist/Quick')))
     // app.get('/', (req, res) => {
     // })
