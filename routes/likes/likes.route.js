@@ -4,6 +4,61 @@ var Likes = require('../../models/likes/likes.model')
 var Nolikes = require('../../models/nolikes/nolikes.model')
 var conexion = require('../../socket/socket')
 
+//Configuracion del socket
+conexion.on('connection', (socket) => {
+
+    // socket.on('mensajeDB', (mensajeResivido) => {
+    //     conexion.sockets.emit('mensajesEmitido', {
+    //         mensaje: mensajeResivido.mensajeActual
+    //     })
+
+    // })
+
+    // <-==============================================
+    // <- Array de nolikes 
+    // <-==============================================
+
+    socket.on('ArrayNoLikes', (id_mensaje) => {
+        Nolikes.find({ id_mensaje: id_mensaje.NolikeDB }, (err, nolikes) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al encontrar el mensaje',
+                    errors: err
+                })
+            }
+
+            conexion.sockets.emit('ArrayNOLikesEmitido', {
+                nolikes: nolikes
+            })
+        })
+
+    })
+
+
+    // <-==============================================
+    // <- Array de likes 
+    // <-==============================================
+
+    socket.on('ArrayLikes', (id_mensaje) => {
+        Likes.find({ id_mensaje: id_mensaje.likeDB }, (err, likes) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al encontrar el mensaje',
+                    errors: err
+                })
+            }
+
+            conexion.sockets.emit('ArrayLikesEmitido', {
+                likes: likes
+            })
+        })
+
+    })
+
+})
+
 // <-==============================================
 // <- Cargar likes 
 // <-==============================================
