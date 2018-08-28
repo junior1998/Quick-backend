@@ -8,10 +8,10 @@ var conexion = require('../../socket/socket')
 // <- Cargar likes 
 // <-==============================================
 
-app.get('/likes/:id_men/:id_usu', (req, res) => {
+app.get('/likes/:id_men', (req, res) => {
     var id_men = req.params.id_men;
-    var id_usu = req.params.id_usu;
-    Likes.find({ id_mensaje: id_men, id_usuario: id_usu }, (err, likes) => {
+    // var id_usu = req.params.id_usu;
+    Likes.find({ id_mensaje: id_men }, (err, likes) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -99,7 +99,6 @@ app.post('/likes/:id_men/:id_usu', (req, res) => {
 
 function EliminarNolike(id_men, id_usu) {
     Nolikes.find({ id_mensaje: id_men, id_usuario: id_usu }, (err, nolikes) => {
-        console.log()
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -111,18 +110,16 @@ function EliminarNolike(id_men, id_usu) {
 
         if (nolikes.length >= 1) {
 
-            Nolikes.findByIdAndRemove(nolikes[0]._id, (err, nolikesBorrado) => {
-                console.log('Mensaje borrado ' + nolikesBorrado)
-            })
+            Nolikes.findByIdAndRemove(nolikes[0]._id, (err, nolikesBorrado) => {})
 
         }
     })
 }
 
-app.get('/nolikes/:id_men/:id_usu', (req, res) => {
+app.get('/nolikes/:id_men', (req, res) => {
     var id_men = req.params.id_men;
-    var id_usu = req.params.id_usu;
-    Nolikes.find({ id_mensaje: id_men, id_usuario: id_usu }, (err, nolikes) => {
+    // var id_usu = req.params.id_usu;
+    Nolikes.find({ id_mensaje: id_men }, (err, nolikes) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -171,7 +168,7 @@ app.post('/nolikes/:id_men/:id_usu', (req, res) => {
                 res.status(200).json({
                     ok: true,
                     mensaje: 'nolike borrado',
-                    nolike: nolikes
+                    nolike: nolikesBorrado
                 })
             })
 
@@ -191,7 +188,7 @@ app.post('/nolikes/:id_men/:id_usu', (req, res) => {
                     })
                 }
 
-                // Eliminarlike(id_men, id_usu)
+                Eliminarlike(id_men, id_usu)
 
                 res.status(200).json({
                     ok: true,
@@ -209,7 +206,6 @@ app.post('/nolikes/:id_men/:id_usu', (req, res) => {
 
 function Eliminarlike(id_men, id_usu) {
     return Likes.find({ id_mensaje: id_men, id_usuario: id_usu }, (err, likes) => {
-        console.log()
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -219,11 +215,9 @@ function Eliminarlike(id_men, id_usu) {
         }
 
 
-        if (likes.length == 1) {
+        if (likes.length >= 1) {
 
-            Likes.findByIdAndRemove(likes[0]._id, (err, likesBorrado) => {
-                return "holaaa"
-            })
+            Likes.findByIdAndRemove(likes[0]._id, (err, likesBorrado) => {})
 
             return true
         }
