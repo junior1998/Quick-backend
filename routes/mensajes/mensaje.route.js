@@ -114,6 +114,7 @@ app.get('/:id', (req, res) => {
     var id = req.params.id;
 
     Mensaje.find({ hecho_id: id, estado: 1 })
+        .sort({ _id: -1 })
         .populate('hecho_objeto')
         .exec((err, mensajes) => {
             if (err) {
@@ -171,12 +172,11 @@ app.post('/', (req, res) => {
     var body = req.body;
 
     var fecha_ = new Date()
-    var dia = fecha_.getDay()
+    var dia = fecha_.getDate()
     var mes = fecha_.getMonth()
     var ano = fecha_.getFullYear()
     var hora = fecha_.getHours()
     var fecha_final = dia + '/' + mes + '/' + ano;
-
 
     var mensaje = new Mensaje({
         nombre_error: body.nombre_error,
@@ -189,6 +189,7 @@ app.post('/', (req, res) => {
         no_like: 0,
         estado: 1
     })
+
 
     mensaje.save((err, mensajes) => {
         if (err) {
@@ -237,11 +238,6 @@ app.get('/likes/:id', (req, res) => {
 
 
 // <-==============================================
-// <- Actualizar like 
-// <-==============================================
-
-
-// <-==============================================
 // <- Actualizar
 // <-==============================================
 app.put('/:id', (req, res) => {
@@ -267,7 +263,7 @@ app.put('/:id', (req, res) => {
         }
 
         var fecha_ = new Date()
-        var dia = fecha_.getDay()
+        var dia = fecha_.getDate()
         var mes = fecha_.getMonth()
         var ano = fecha_.getFullYear()
         var hora = fecha_.getHours()
