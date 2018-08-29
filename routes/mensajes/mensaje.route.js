@@ -59,7 +59,7 @@ app.get('/buscar/:busqueda', (req, res) => {
     var busqueda = req.params.busqueda;
     var regex = new RegExp(busqueda, 'i');
 
-    Mensaje.find({}).or([{ 'nombre_error': regex }, { 'tipo_error': regex }, { 'solucion': regex }])
+    Mensaje.find({ estado: 1 }).or([{ 'nombre_error': regex }, { 'tipo_error': regex }, { 'solucion': regex }])
         .populate('hecho_objeto')
         .exec((err, mensaje) => {
             if (err) {
